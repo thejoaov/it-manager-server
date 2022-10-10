@@ -1,0 +1,14 @@
+{
+  "all": true,
+  "reporter": ["lcov", "text"],
+  "reporterOptions": { "mochaFile": "coverage/junit-report.xml" },
+  "temp-dir": "tests/coverage/.nyc_output",
+  "include": [
+    "app/Controllers/**/*.*",
+    "app/Exceptions/**/*.*",
+    "app/Models/**/*.*",
+    "app/Services/**/*.*",
+    "app/Validators/**/*.*",
+    "start/routes.ts"
+  ]
+}
