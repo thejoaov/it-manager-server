@@ -26,7 +26,9 @@ export default class ProfileValidator {
   public schema = schema.create({
     name: schema.string({}, [rules.required()]),
     birthdate: schema.date(),
-    role: schema.enum(['admin', 'user', 'guest', 'support'] as const, [rules.required()]),
+    role: schema.enum(['admin', 'user', 'guest', 'support', 'manager', 'technician'] as const, [
+      rules.required(),
+    ]),
     telephone: schema.string({ trim: true }, [rules.minLength(3), rules.maxLength(20)]),
     jobTitle: schema.string({}, [rules.required()]),
     startDate: schema.date(),

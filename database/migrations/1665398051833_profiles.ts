@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.integer('user_id').unsigned().references('users.id').onDelete('CASCADE')
       table.string('name')
       table.date('birthdate')
-      table.enum('role', ['admin', 'user', 'guest', 'support'])
+      table.enum('role', ['admin', 'user', 'guest', 'support', 'technician', 'manager'])
       table.string('telephone')
       table.string('job_title')
       table.timestamp('start_date')

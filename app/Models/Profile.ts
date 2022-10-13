@@ -19,7 +19,7 @@ export default class Profile extends BaseModel {
   public birthdate: DateTime
 
   @column()
-  public role: 'admin' | 'user' | 'guest' | 'support'
+  public role: 'admin' | 'user' | 'guest' | 'support' | 'manager' | 'technician'
 
   @column()
   public telephone: string

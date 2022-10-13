@@ -7,10 +7,11 @@
     "build": "node ace build --production",
     "start": "node server.js",
     "lint": "eslint . --ext=.ts",
-    "format": "prettier --write .",
+    "format": "prettier --write ./**/*.ts",
     "test:functional": "node ace test functional",
     "test": "node ace test",
-    "coverage": "nyc yarn test"
+    "coverage": "nyc yarn test",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
@@ -52,6 +53,7 @@
     "eslint-plugin-adonis": "^2.1.1",
     "eslint-plugin-prettier": "^4.2.1",
     "git-commit-msg-linter": "^4.2.1",
+    "husky": "^8.0.1",
     "nyc": "^15.1.0",
     "pino-pretty": "^9.1.0",
     "prettier": "^2.7.1",
