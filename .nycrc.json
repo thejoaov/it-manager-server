@@ -6,7 +6,6 @@
   "include": [
     "app/Controllers/**/*.*",
     "app/Exceptions/**/*.*",
-    "app/Models/**/*.*",
     "app/Services/**/*.*",
     "app/Validators/**/*.*",
     "start/routes.ts"

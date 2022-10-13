@@ -22,3 +22,4 @@
 import 'App/Routes/SessionRoutes'
 import 'App/Routes/UserRoutes'
 import 'App/Routes/ProfileRoutes'
+import 'App/Routes/TicketRoutes'

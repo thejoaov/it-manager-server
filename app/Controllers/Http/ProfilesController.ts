@@ -9,9 +9,7 @@ export default class ProfilesController {
    */
   public async store(ctx: HttpContextContract) {
     const { request, response } = ctx
-    const requestBody = await request.validate({
-      schema: new ProfileValidator(ctx).schema,
-    })
+    const requestBody = await request.validate(ProfileValidator)
 
     const user = await User.findOrFail(request.params().id)
 
@@ -53,9 +51,7 @@ export default class ProfilesController {
   public async update(ctx: HttpContextContract) {
     const { request, response } = ctx
 
-    const requestBody = await request.validate({
-      schema: new ProfileValidator(ctx).schema,
-    })
+    const requestBody = await request.validate(ProfileValidator)
 
     const user = await User.findOrFail(request.params().id)
 
