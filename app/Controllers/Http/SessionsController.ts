@@ -6,10 +6,14 @@ export default class SessionsController {
    * POST /login
    */
   public async create({ request, response, auth }: HttpContextContract) {
-    const { login, password } = request.all()
+    const { login, password } = request.body()
 
-    const token = await auth.attempt(login, password)
+    const { token } = await auth.attempt(login, password)
 
-    return response.status(200).json(token)
+    const user = await auth.verifyCredentials(login, password)
+
+    await user.load('profile')
+
+    return response.status(200).json({ token, user: user.serialize() })
   }
 }
