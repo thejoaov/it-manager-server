@@ -22,20 +22,9 @@ export default class ProfilesController {
     return response.status(200).json(user.serialize())
   }
 
-  /**
-   * Show a user profile
-   * GET /profile/:id
-   */
-  public async show({ params: { id }, response }: HttpContextContract) {
+  public async show({ params: { id }, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const user = await User.findOrFail(id)
-
-    // const responseBody = user.serializeRelations({
-    //   profile: {
-    //     fields: ['name', 'birthdate', 'role', 'telephone', 'jobTitle', 'startDate'],
-    //   },
-    // })
-
-    // const responseBody = user.profile
 
     await user.load('profile')
 
@@ -44,19 +33,15 @@ export default class ProfilesController {
     return response.status(200).json(responseBody)
   }
 
-  /**
-   * Update a user
-   * PUT /profile/:id
-   */
-  public async update(ctx: HttpContextContract) {
-    const { request, response } = ctx
-
+  public async update({ request, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const requestBody = await request.validate(ProfileValidator)
 
     const user = await User.findOrFail(request.params().id)
 
-    await (await user.related('profile').updateOrCreate({}, requestBody)).save()
+    const profile = await user.related('profile').updateOrCreate({ userId: user.id }, requestBody)
 
+    await profile.save()
     await user.save()
 
     return response.status(200).json(user.serialize())

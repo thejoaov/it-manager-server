@@ -4,7 +4,8 @@ import Ticket from 'App/Models/Ticket'
 import TicketValidator from 'App/Validators/TicketValidator'
 
 export default class TicketsController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const { page, perPage, status, priority } = request.qs()
 
     const tickets = await Ticket.query()
@@ -17,8 +18,8 @@ export default class TicketsController {
     response.json(res)
   }
 
-  public async store(ctx: HttpContextContract) {
-    const { request, response } = ctx
+  public async store({ request, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const data = await request.validate(TicketValidator)
 
     const { location, title, description, opener, assignee } = data
@@ -40,7 +41,8 @@ export default class TicketsController {
     response.json(res)
   }
 
-  public async show({ params, response }: HttpContextContract) {
+  public async show({ params, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const ticket = await Ticket.findOrFail(params.id)
 
     const res = {
@@ -52,8 +54,8 @@ export default class TicketsController {
     response.json(res)
   }
 
-  public async update(ctx: HttpContextContract) {
-    const { request, params, response } = ctx
+  public async update({ request, params, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const data = await request.validate(TicketValidator)
 
     const { location, title, description, opener, assignee } = data
@@ -77,7 +79,8 @@ export default class TicketsController {
     response.json(res)
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const ticket = await Ticket.findOrFail(params.id)
 
     await ticket.delete()

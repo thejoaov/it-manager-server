@@ -23,7 +23,8 @@ export default class UsersController {
    * Show a user
    * GET /users/:id
    */
-  public async show({ params: { id }, response }: HttpContextContract) {
+  public async show({ params: { id }, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const user = await User.findOrFail(id)
 
     return response.status(200).json(user.serialize())
@@ -33,7 +34,8 @@ export default class UsersController {
    * Update a user
    * PUT /users/:id
    */
-  public async update({ request, params: { id }, response }: HttpContextContract) {
+  public async update({ request, params: { id }, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const updatedUser = request.all()
     const user = await User.findOrFail(id)
 
@@ -46,7 +48,8 @@ export default class UsersController {
    * Delete a user
    * DELETE /users/:id
    */
-  public async destroy({ params: { id }, response }: HttpContextContract) {
+  public async destroy({ params: { id }, response, auth }: HttpContextContract) {
+    await auth.authenticate()
     const user = await User.findOrFail(id)
 
     await user.delete()
