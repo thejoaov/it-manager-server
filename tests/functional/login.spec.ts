@@ -8,7 +8,9 @@ test.group('login', () => {
 
     const { username, email } = await UserFactory.merge({
       password: randomPassword,
-    }).create()
+    })
+      .with('profile')
+      .create()
 
     // login with email
     const response = await client
@@ -23,7 +25,21 @@ test.group('login', () => {
       .send()
 
     response.assertStatus(200)
+    response.assertBodyContains({
+      token: String,
+      user: Object,
+      remember_me_token: String || null,
+      updated_at: String,
+      username: String,
+    })
     response2.assertStatus(200)
+    response2.assertBodyContains({
+      token: String,
+      user: Object,
+      remember_me_token: String || null,
+      updated_at: String,
+      username: String,
+    })
   })
 
   test('/login [POST] with invalid credentials', async ({ client }) => {
