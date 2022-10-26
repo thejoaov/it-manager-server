@@ -34,20 +34,19 @@ test.group('profile', () => {
 
   test('/profile/:id [PUT]', async ({ client }) => {
     const user = await UserFactory.with('profile').create()
-    const profile = await ProfileFactory.create()
+
+    await user.load('profile')
 
     const response = await client
       .put(`/profile/${user.id}`)
       .guard('api')
       .loginAs(user)
       .json({
-        ...profile.serialize(),
-        jobTitle: profile.serialize().job_title,
-        startDate: profile.serialize().start_date,
+        name: 'Test',
       })
       .send()
 
     response.assertStatus(200)
-    response.assertBodyContains({ profile: Object })
+    response.assertBodyContains({ ...response.body(), name: 'Test' })
   })
 })

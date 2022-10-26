@@ -5,12 +5,19 @@ export default class ProfileUpdateValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-    name: schema.string(),
-    birthdate: schema.date(),
-    role: schema.enum(['admin', 'user', 'guest', 'support', 'manager', 'technician'] as const),
-    telephone: schema.string({ trim: true }, [rules.minLength(8), rules.maxLength(20)]),
-    jobTitle: schema.string(),
-    startDate: schema.date(),
+    name: schema.string.optional(),
+    birthdate: schema.date.optional(),
+    role: schema.enum.optional([
+      'admin',
+      'user',
+      'guest',
+      'support',
+      'manager',
+      'technician',
+    ] as const),
+    telephone: schema.string.optional({ trim: true }, [rules.minLength(8), rules.maxLength(20)]),
+    jobTitle: schema.string.optional(),
+    startDate: schema.date.optional(),
   })
 
   public messages: CustomMessages = {

@@ -5,13 +5,13 @@ export default class UserUpdateValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-    username: schema.string.nullableAndOptional({ trim: true }, [
+    username: schema.string.optional({ trim: true }, [
       rules.requiredIfNotExists('email'),
       rules.minLength(3),
       rules.maxLength(20),
       rules.unique({ table: 'users', column: 'username' }),
     ]),
-    email: schema.string.nullableAndOptional({ trim: true }, [
+    email: schema.string.optional({ trim: true }, [
       rules.requiredIfNotExists('username'),
       rules.email(),
       rules.unique({ table: 'users', column: 'email' }),

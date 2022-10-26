@@ -50,4 +50,13 @@ test.group('login', () => {
 
     response.assertStatus(400)
   })
+
+  test('/login [POST] with invalid body', async ({ client }) => {
+    const response = await client
+      .post('/login')
+      .json({ password: faker.internet.password(10) })
+      .send()
+
+    response.assertStatus(422)
+  })
 })

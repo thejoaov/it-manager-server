@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import SessionValidator from 'App/Validators/SessionValidator'
 
 export default class SessionsController {
   /**
@@ -6,7 +7,7 @@ export default class SessionsController {
    * POST /login
    */
   public async create({ request, response, auth }: HttpContextContract) {
-    const { login, password } = request.body()
+    const { login, password } = await request.validate(SessionValidator)
 
     const { token } = await auth.attempt(login, password)
 

@@ -1,5 +1,4 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Profile from 'App/Models/Profile'
 import Ticket from 'App/Models/Ticket'
 import TicketUpdateValidator from 'App/Validators/TicketUpdateValidator'
 import TicketValidator from 'App/Validators/TicketValidator'
@@ -14,7 +13,12 @@ export default class TicketsController {
       .where('priority', 'like', priority ?? '%')
       .paginate(page, perPage)
 
-    const res = tickets.serialize()
+    const res = tickets.serialize({
+      relations: {
+        opener: { fields: { pick: ['name', 'role'] } },
+        assignee: { fields: { pick: ['name', 'role'] } },
+      },
+    })
 
     response.json(res)
   }
@@ -26,36 +30,28 @@ export default class TicketsController {
     await auth.user?.load('profile')
     await bouncer.authorize('createTicket', auth.user?.profile!)
 
-    const { location, title, description, opener, assignee } = data
+    const { opener, assignee } = data
 
     const ticket = await Ticket.create({
-      location,
-      title,
-      description,
+      ...data,
       openerId: opener,
       assigneeId: assignee,
     })
 
-    const res = {
-      ...ticket.serialize(),
-      opener: (await Profile.findOrFail(ticket.openerId)).serialize(),
-      assignee: (await Profile.findOrFail(ticket.assigneeId)).serialize(),
-    }
+    await ticket.load('assignee')
+    await ticket.load('opener')
 
-    response.json(res)
+    response.json(ticket)
   }
 
   public async show({ params, response, auth }: HttpContextContract) {
     await auth.authenticate()
     const ticket = await Ticket.findOrFail(params.id)
 
-    const res = {
-      ...ticket.serialize(),
-      opener: (await Profile.findOrFail(ticket.openerId)).serialize(),
-      assignee: (await Profile.findOrFail(ticket.assigneeId)).serialize(),
-    }
+    await ticket.load('assignee')
+    await ticket.load('opener')
 
-    response.json(res)
+    response.json(ticket)
   }
 
   public async update({ request, params, response, auth, bouncer }: HttpContextContract) {
@@ -65,25 +61,23 @@ export default class TicketsController {
     await auth.user?.load('profile')
     await bouncer.authorize('updateTicket', auth.user?.profile!)
 
-    const { location, title, description, opener, assignee } = data
-
     const ticket = await Ticket.findOrFail(params.id)
 
-    ticket.location = location
-    ticket.title = title
-    ticket.description = description
-    ticket.openerId = opener
-    ticket.assigneeId = assignee
+    const updatedTicket = ticket.merge(data)
 
-    await ticket.save()
+    await updatedTicket.save()
 
-    const res = {
-      ...ticket.serialize(),
-      opener: (await Profile.findOrFail(ticket.openerId)).serialize(),
-      assignee: (await Profile.findOrFail(ticket.assigneeId)).serialize(),
-    }
+    await updatedTicket.load('assignee')
+    await updatedTicket.load('opener')
 
-    response.json(res)
+    response.json(
+      updatedTicket.serialize({
+        relations: {
+          opener: { fields: { pick: ['name', 'role', 'telephone'] } },
+          assignee: { fields: { pick: ['name', 'role', 'telephone'] } },
+        },
+      })
+    )
   }
 
   public async destroy({ params, response, auth, bouncer }: HttpContextContract) {

@@ -248,13 +248,7 @@ test.group('tickets', ({ each }) => {
 
   test('/tickets/:id [PUT]', async ({ client }) => {
     const request = {
-      title: 'test ticket updated',
-      description: 'test ticket description',
-      status: 'open',
       priority: 'low',
-      opener: admin.id,
-      assignee: technician.id,
-      location: 'test location',
     }
 
     const response = await client
@@ -264,7 +258,8 @@ test.group('tickets', ({ each }) => {
       .json(request)
       .send()
 
-    response.assertBodyContains({ title: 'test ticket updated' })
+    response.assertBodyContains(request)
+    response.assertBodyContains({ opener: { name: String }, assignee: { name: String } })
     response.assertStatus(200)
   })
 

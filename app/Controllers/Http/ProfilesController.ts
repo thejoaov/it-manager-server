@@ -38,13 +38,12 @@ export default class ProfilesController {
     await auth.authenticate()
     const requestBody = await request.validate(ProfileUpdateValidator)
 
-    const user = await User.findOrFail(request.params().id)
+    await auth.user?.load('profile')
 
-    const profile = await user.related('profile').updateOrCreate({ userId: user.id }, requestBody)
+    auth.user?.profile?.merge(requestBody)
 
-    await profile.save()
-    await user.save()
+    await auth.user?.profile?.save()
 
-    return response.status(200).json(user.serialize())
+    return response.status(200).json(auth.user?.profile?.serialize())
   }
 }

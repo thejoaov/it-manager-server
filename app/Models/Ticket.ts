@@ -29,11 +29,15 @@ export default class Ticket extends BaseModel {
 
   @hasOne(() => Profile, {
     foreignKey: 'id',
+    localKey: 'openerId',
+    serializeAs: 'opener',
   })
   public opener: HasOne<typeof Profile>
 
   @hasOne(() => Profile, {
     foreignKey: 'id',
+    localKey: 'assigneeId',
+    serializeAs: 'assignee',
   })
   public assignee: HasOne<typeof Profile>
 
