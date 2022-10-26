@@ -1,15 +1,15 @@
 import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class TicketValidator {
+export default class TicketUpdateValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-    title: schema.string([rules.maxLength(255), rules.required()]),
-    description: schema.string([rules.required()]),
-    status: schema.enum(['open', 'closed', 'solving'] as const, [rules.required()]),
+    title: schema.string({ trim: true }, [rules.maxLength(255)]),
+    description: schema.string({ trim: true }),
+    status: schema.enum(['open', 'closed', 'solving'] as const),
     priority: schema.enum(['low', 'medium', 'high'] as const),
-    location: schema.string([rules.maxLength(255), rules.required()]),
+    location: schema.string({ trim: true }, [rules.maxLength(255)]),
     assignee: schema.number([
       rules.exists({
         table: 'profiles',
@@ -21,9 +21,8 @@ export default class TicketValidator {
         column: 'id',
         whereNot: { role: 'guest' },
       }),
-      rules.required(),
     ]),
-    opener: schema.number([rules.exists({ table: 'profiles', column: 'id' }), rules.required()]),
+    opener: schema.number([rules.exists({ table: 'profiles', column: 'id' })]),
   })
 
   public messages: CustomMessages = {

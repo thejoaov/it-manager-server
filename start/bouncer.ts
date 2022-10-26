@@ -6,6 +6,9 @@
  */
 
 import Bouncer from '@ioc:Adonis/Addons/Bouncer'
+import Profile from 'App/Models/Profile'
+import Ticket from 'App/Models/Ticket'
+import User from 'App/Models/User'
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +32,25 @@ import Bouncer from '@ioc:Adonis/Addons/Bouncer'
 | NOTE: Always export the "actions" const from this file
 |****************************************************************
 */
-export const { actions } = Bouncer
+export const { actions } = Bouncer.define(
+  'createTicket',
+  (user: User, profile: Profile) => profile.role !== 'guest'
+)
+  .define('deleteTicket', (user: User, profile: Profile) =>
+    (['admin', 'manager', 'support'] as Profile['role'][]).includes(profile.role)
+  )
+  .define('updateTicket', (user: User, profile: Profile) =>
+    (['admin', 'manager', 'support', 'technician', 'user'] as Profile['role'][]).includes(
+      profile.role
+    )
+  )
+  .define('closeTicket', (user: User, profile: Profile, ticket: Ticket) => {
+    return (
+      ((['support', 'technician'] as Profile['role'][]).includes(profile.role) &&
+        ticket.assigneeId === profile.id) ||
+      (['admin', 'manager'] as Profile['role'][]).includes(profile.role)
+    )
+  })
 
 /*
 |--------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Profile from 'App/Models/Profile'
 import Ticket from 'App/Models/Ticket'
+import TicketUpdateValidator from 'App/Validators/TicketUpdateValidator'
 import TicketValidator from 'App/Validators/TicketValidator'
 
 export default class TicketsController {
@@ -18,9 +19,12 @@ export default class TicketsController {
     response.json(res)
   }
 
-  public async store({ request, response, auth }: HttpContextContract) {
+  public async store({ request, response, auth, bouncer }: HttpContextContract) {
     await auth.authenticate()
     const data = await request.validate(TicketValidator)
+
+    await auth.user?.load('profile')
+    await bouncer.authorize('createTicket', auth.user?.profile!)
 
     const { location, title, description, opener, assignee } = data
 
@@ -54,9 +58,12 @@ export default class TicketsController {
     response.json(res)
   }
 
-  public async update({ request, params, response, auth }: HttpContextContract) {
+  public async update({ request, params, response, auth, bouncer }: HttpContextContract) {
     await auth.authenticate()
-    const data = await request.validate(TicketValidator)
+    const data = await request.validate(TicketUpdateValidator)
+
+    await auth.user?.load('profile')
+    await bouncer.authorize('updateTicket', auth.user?.profile!)
 
     const { location, title, description, opener, assignee } = data
 
@@ -79,8 +86,13 @@ export default class TicketsController {
     response.json(res)
   }
 
-  public async destroy({ params, response, auth }: HttpContextContract) {
+  public async destroy({ params, response, auth, bouncer }: HttpContextContract) {
     await auth.authenticate()
+
+    await auth.user?.load('profile')
+
+    await bouncer.authorize('deleteTicket', auth.user?.profile!)
+
     const ticket = await Ticket.findOrFail(params.id)
 
     await ticket.delete()

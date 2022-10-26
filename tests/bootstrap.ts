@@ -22,7 +22,12 @@ import { join } from 'path'
 | Feel free to remove existing plugins or add more.
 |
 */
-export const plugins: Config['plugins'] = [assert(), runFailedTests(), apiClient()]
+export const plugins: Config['plugins'] = [
+  assert(),
+  // run failed tests
+  // runFailedTests(),
+  apiClient(),
+]
 
 /*
 |--------------------------------------------------------------------------

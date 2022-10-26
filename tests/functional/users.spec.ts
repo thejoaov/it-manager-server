@@ -14,6 +14,7 @@ test.group('users', () => {
         username: randomUsername,
         email: randomEmail,
         password: randomPassword,
+        passwordConfirmation: randomPassword,
       })
       .send()
 
@@ -34,15 +35,16 @@ test.group('users', () => {
     const randomPassword = faker.internet.password(12)
 
     const user = await UserFactory.merge({ password: randomPassword }).create()
+    const newPassword = faker.internet.password(12)
 
     const response = await client
       .put(`/users/${user.id}`)
       .guard('api')
       .loginAs(user)
       .json({
-        username: user.username,
-        email: user.email,
-        password: faker.internet.password(12),
+        email: faker.internet.email(),
+        password: newPassword,
+        passwordConfirmation: newPassword,
       })
       .send()
 

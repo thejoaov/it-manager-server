@@ -1,6 +1,9 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { schema, validator } from '@ioc:Adonis/Core/Validator'
+
 import User from 'App/Models/User'
-import { UserValidator } from 'App/Validators/UsersValidator'
+import UserUpdateValidator from 'App/Validators/UserUpdateValidator'
+import UserValidator from 'App/Validators/UserValidator'
 
 export default class UsersController {
   /**
@@ -8,9 +11,7 @@ export default class UsersController {
    * POST /users
    */
   public async store({ request, response }: HttpContextContract) {
-    const { email, password, username } = await request.validate({
-      schema: UserValidator,
-    })
+    const { email, password, username } = await request.validate(UserValidator)
 
     const user = await User.create({ email, password, username })
 
@@ -36,10 +37,11 @@ export default class UsersController {
    */
   public async update({ request, params: { id }, response, auth }: HttpContextContract) {
     await auth.authenticate()
-    const updatedUser = request.all()
+    const { email, password, username } = await request.validate(UserUpdateValidator)
+
     const user = await User.findOrFail(id)
 
-    await user.merge(updatedUser).save()
+    await user.merge({ email: email!, username: username!, password }).save()
 
     return response.status(200).json(user.serialize())
   }
