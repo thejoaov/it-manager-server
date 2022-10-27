@@ -13,6 +13,17 @@ test.group('profile', () => {
     response.assertBodyContains({ profile: Object })
   })
 
+  test('/profile/:id [GET] with invalid token', async ({ client }) => {
+    const user = await UserFactory.with('profile').create()
+
+    const response = await client.get(`/profile/${user.id}`).send()
+
+    response.assertStatus(401)
+    response.assertBodyContains({
+      errors: [{ message: 'E_UNAUTHORIZED_ACCESS: Unauthorized access' }],
+    })
+  })
+
   test('/profile/:id [POST]', async ({ client }) => {
     const user = await UserFactory.create()
     const profile = await ProfileFactory.create()
