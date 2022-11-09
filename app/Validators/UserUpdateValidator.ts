@@ -6,18 +6,19 @@ export default class UserUpdateValidator {
 
   public schema = schema.create({
     username: schema.string.optional({ trim: true }, [
-      rules.requiredIfNotExists('email'),
       rules.minLength(3),
       rules.maxLength(20),
       rules.unique({ table: 'users', column: 'username' }),
     ]),
     email: schema.string.optional({ trim: true }, [
-      rules.requiredIfNotExists('username'),
       rules.email(),
       rules.unique({ table: 'users', column: 'email' }),
     ]),
-    password: schema.string({ trim: true }, [rules.minLength(8)]),
-    passwordConfirmation: schema.string({ trim: true }, [rules.confirmed('password')]),
+    password: schema.string.optional({ trim: true }, [rules.minLength(8)]),
+    passwordConfirmation: schema.string.optional({ trim: true }, [
+      rules.requiredIfExists('password'),
+      rules.confirmed('password'),
+    ]),
   })
 
   public messages: CustomMessages = {

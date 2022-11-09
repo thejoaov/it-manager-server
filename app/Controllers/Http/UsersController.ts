@@ -16,6 +16,7 @@ export default class UsersController {
     const user = await User.create({ email, password, username })
 
     await user.save()
+    await user.load('profile')
 
     return response.status(200).json(user.serialize())
   }
@@ -27,6 +28,7 @@ export default class UsersController {
   public async show({ params: { id }, response, auth }: HttpContextContract) {
     await auth.authenticate()
     const user = await User.findOrFail(id)
+    await user.load('profile')
 
     return response.status(200).json(user.serialize())
   }
@@ -42,6 +44,7 @@ export default class UsersController {
     const user = await User.findOrFail(id)
 
     await user.merge({ email: email!, username: username!, password }).save()
+    await user.load('profile')
 
     return response.status(200).json(user.serialize())
   }
@@ -56,6 +59,6 @@ export default class UsersController {
 
     await user.delete()
 
-    return response.status(200).json(user.serialize())
+    return response.status(200)
   }
 }

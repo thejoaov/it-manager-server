@@ -19,6 +19,7 @@ test.group('users', () => {
       .send()
 
     response.assertStatus(200)
+    response.assertBodyContains({ username: String })
   })
 
   test('/users/:id [GET]', async ({ client }) => {
@@ -29,6 +30,7 @@ test.group('users', () => {
     const response = await client.get(`/users/${user.id}`).guard('api').loginAs(user).send()
 
     response.assertStatus(200)
+    response.assertBodyContains({ username: String })
   })
 
   test('/users/:id [PUT]', async ({ client }) => {
@@ -49,6 +51,7 @@ test.group('users', () => {
       .send()
 
     response.assertStatus(200)
+    response.assertBodyContains({ username: String })
   })
 
   test('/users/:id [DELETE]', async ({ client }) => {

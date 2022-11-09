@@ -20,7 +20,7 @@ export default class ProfilesController {
 
     await user.load('profile')
 
-    return response.status(200).json(user.serialize())
+    return response.status(200).json(user.serialize().profile)
   }
 
   public async show({ params: { id }, response, auth }: HttpContextContract) {
@@ -29,9 +29,7 @@ export default class ProfilesController {
 
     await user.load('profile')
 
-    const responseBody = user.serialize()
-
-    return response.status(200).json(responseBody)
+    return response.status(200).json(user.serialize().profile)
   }
 
   public async update({ request, response, auth }: HttpContextContract) {
