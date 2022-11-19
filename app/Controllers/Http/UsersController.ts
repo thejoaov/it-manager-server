@@ -1,5 +1,4 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { schema, validator } from '@ioc:Adonis/Core/Validator'
 
 import User from 'App/Models/User'
 import UserUpdateValidator from 'App/Validators/UserUpdateValidator'
@@ -14,6 +13,7 @@ export default class UsersController {
     const { email, password, username } = await request.validate(UserValidator)
 
     const user = await User.create({ email, password, username })
+    await user.related('profile').create({})
 
     await user.save()
     await user.load('profile')

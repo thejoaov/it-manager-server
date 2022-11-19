@@ -26,7 +26,7 @@ export default class extends BaseSeeder {
         jobTitle: 'admin',
         startDate: DateTime.fromJSDate(faker.date.past(1)),
         name: faker.name.fullName({
-          firstName: 'Admilson',
+          firstName: 'Ademilson',
         }),
       }
     )

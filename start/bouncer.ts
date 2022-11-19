@@ -47,9 +47,12 @@ export const { actions } = Bouncer.define(
   .define('closeTicket', (user: User, profile: Profile, ticket: Ticket) => {
     return (
       ((['support', 'technician'] as Profile['role'][]).includes(profile.role) &&
-        ticket.assigneeId === profile.id) ||
+        ticket.assignee_id === profile.id) ||
       (['admin', 'manager'] as Profile['role'][]).includes(profile.role)
     )
+  })
+  .define('changeRole', (user: User, profile: Profile) => {
+    return (['admin', 'manager'] as Profile['role'][]).includes(profile.role)
   })
 
 /*

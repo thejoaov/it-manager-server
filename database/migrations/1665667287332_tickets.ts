@@ -7,12 +7,12 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('title').notNullable()
-      table.string('description').notNullable()
-      table.string('location').notNullable()
+      table.text('description').nullable()
+      table.string('location').nullable()
       table.integer('opener_id').unsigned().references('id').inTable('profiles')
       table.enum('status', ['open', 'closed', 'solving']).defaultTo('open')
-      table.integer('assignee_id').unsigned().references('id').inTable('profiles')
-      table.enum('priority', ['low', 'medium', 'high']).defaultTo('low')
+      table.integer('assignee_id').unsigned().references('id').inTable('profiles').nullable()
+      table.enum('priority', ['low', 'medium', 'high']).defaultTo('medium')
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

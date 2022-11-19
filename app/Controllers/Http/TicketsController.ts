@@ -11,37 +11,40 @@ export default class TicketsController {
     const tickets = await Ticket.query()
       .where('status', 'like', status ?? '%')
       .where('priority', 'like', priority ?? '%')
+      .preload('opener', (query) => {
+        query.preload('user')
+      })
+      .preload('assignee', (query) => {
+        query.preload('user')
+      })
       .paginate(page, perPage)
 
-    const res = tickets.serialize({
-      relations: {
-        opener: { fields: { pick: ['name', 'role'] } },
-        assignee: { fields: { pick: ['name', 'role'] } },
-      },
-    })
-
-    response.json(res)
+    response.json(tickets.serialize())
   }
 
   public async store({ request, response, auth, bouncer }: HttpContextContract) {
-    await auth.authenticate()
-    const data = await request.validate(TicketValidator)
+    const user = await auth.authenticate()
+    const body = request.body()
+
+    const {
+      status = 'open',
+      priority = 'medium',
+      opener_id = user.profile.id,
+      assignee_id = body.assignee_id ? body.assignee_id : null,
+      ...data
+    } = await request.validate(TicketValidator)
 
     await auth.user?.load('profile')
     await bouncer.authorize('createTicket', auth.user?.profile!)
 
-    const { opener, assignee } = data
-
-    const ticket = await Ticket.create({
-      ...data,
-      openerId: opener,
-      assigneeId: assignee,
-    })
+    const ticket = await Ticket.create(data)
+    await ticket.save()
 
     await ticket.load('assignee')
+
     await ticket.load('opener')
 
-    response.json(ticket)
+    response.json(ticket.serialize())
   }
 
   public async show({ params, response, auth }: HttpContextContract) {
@@ -51,7 +54,7 @@ export default class TicketsController {
     await ticket.load('assignee')
     await ticket.load('opener')
 
-    response.json(ticket)
+    response.json(ticket.serialize())
   }
 
   public async update({ request, params, response, auth, bouncer }: HttpContextContract) {
@@ -70,14 +73,7 @@ export default class TicketsController {
     await updatedTicket.load('assignee')
     await updatedTicket.load('opener')
 
-    response.json(
-      updatedTicket.serialize({
-        relations: {
-          opener: { fields: { pick: ['name', 'role', 'telephone'] } },
-          assignee: { fields: { pick: ['name', 'role', 'telephone'] } },
-        },
-      })
-    )
+    response.json(ticket.serialize())
   }
 
   public async destroy({ params, response, auth, bouncer }: HttpContextContract) {

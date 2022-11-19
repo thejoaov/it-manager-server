@@ -16,8 +16,8 @@ export default class ProfileUpdateValidator {
       'technician',
     ] as const),
     telephone: schema.string.optional({ trim: true }, [rules.minLength(8), rules.maxLength(20)]),
-    jobTitle: schema.string.optional(),
-    startDate: schema.date.optional(),
+    job_title: schema.string.optional(),
+    start_date: schema.date.optional(),
   })
 
   public messages: CustomMessages = {

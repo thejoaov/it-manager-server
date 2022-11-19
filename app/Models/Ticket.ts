@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, BelongsTo, belongsTo } from '@ioc:Adonis/Lucid/Orm'
 import Profile from './Profile'
 
 export default class Ticket extends BaseModel {
@@ -10,7 +10,7 @@ export default class Ticket extends BaseModel {
   public title: string
 
   @column()
-  public description: string
+  public description: string | null
 
   @column()
   public status: 'open' | 'closed' | 'solving'
@@ -19,27 +19,27 @@ export default class Ticket extends BaseModel {
   public priority: 'low' | 'medium' | 'high'
 
   @column()
-  public location: string
+  public location: string | null
 
   @column()
   public openerId: number
 
   @column()
-  public assigneeId: number
+  public assigneeId: number | null
 
-  @hasOne(() => Profile, {
-    foreignKey: 'id',
-    localKey: 'openerId',
-    serializeAs: 'opener',
+  @belongsTo(() => Profile, {
+    foreignKey: 'openerId',
+    // localKey: 'openerId',
+    // serializeAs: 'opener',
   })
-  public opener: HasOne<typeof Profile>
+  public opener: BelongsTo<typeof Profile>
 
-  @hasOne(() => Profile, {
-    foreignKey: 'id',
-    localKey: 'assigneeId',
-    serializeAs: 'assignee',
+  @belongsTo(() => Profile, {
+    foreignKey: 'assigneeId',
+    // localKey: 'assigneeId',
+    // serializeAs: 'assignee',
   })
-  public assignee: HasOne<typeof Profile>
+  public assignee: BelongsTo<typeof Profile>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
