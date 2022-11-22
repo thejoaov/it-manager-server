@@ -30,18 +30,23 @@ export default class TicketsController {
       status = 'open',
       priority = 'medium',
       opener_id = user.profile.id,
-      assignee_id = body.assignee_id ? body.assignee_id : null,
+      assignee_id = body.assignee_id || null,
       ...data
     } = await request.validate(TicketValidator)
 
     await auth.user?.load('profile')
     await bouncer.authorize('createTicket', auth.user?.profile!)
 
-    const ticket = await Ticket.create(data)
+    const ticket = await Ticket.create({
+      ...data,
+      status,
+      priority,
+      openerId: opener_id,
+      assigneeId: assignee_id,
+    })
     await ticket.save()
 
     await ticket.load('assignee')
-
     await ticket.load('opener')
 
     response.json(ticket.serialize())

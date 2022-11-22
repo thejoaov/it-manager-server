@@ -11,7 +11,13 @@ export default class extends BaseSchema {
       table.string('location').nullable()
       table.integer('opener_id').unsigned().references('id').inTable('profiles')
       table.enum('status', ['open', 'closed', 'solving']).defaultTo('open')
-      table.integer('assignee_id').unsigned().references('id').inTable('profiles').nullable()
+      table
+        .integer('assignee_id')
+        .unsigned()
+        .references('id')
+        .inTable('profiles')
+        .nullable()
+        .defaultTo(null)
       table.enum('priority', ['low', 'medium', 'high']).defaultTo('medium')
 
       /**

@@ -62,8 +62,6 @@ test.group('tickets [GET]', ({ each }) => {
       .loginAs(admin.user)
       .send()
 
-    console.log(response.body())
-
     response.assertBodyContains({ data: Array, meta: Object })
     response.assertStatus(200)
   })

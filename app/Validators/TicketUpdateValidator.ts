@@ -5,24 +5,36 @@ export default class TicketUpdateValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-    title: schema.string.optional({ trim: true }, [rules.maxLength(255)]),
-    description: schema.string.optional({ trim: true }),
+    title: schema.string.optional([rules.maxLength(120)]),
+    description: schema.string.optional([rules.maxLength(255)]),
     status: schema.enum.optional(['open', 'closed', 'solving'] as const),
     priority: schema.enum.optional(['low', 'medium', 'high'] as const),
-    location: schema.string.optional({ trim: true }, [rules.maxLength(255)]),
-    assignee: schema.number.optional([
+    location: schema.string.optional([rules.maxLength(120)]),
+    assignee_id: schema.number.nullableAndOptional([
       rules.exists({
         table: 'profiles',
         column: 'id',
-        whereNot: { role: 'user' },
+        whereNot: {
+          role: 'user',
+        },
       }),
       rules.exists({
         table: 'profiles',
         column: 'id',
-        whereNot: { role: 'guest' },
+        whereNot: {
+          role: 'guest',
+        },
       }),
     ]),
-    opener: schema.number.optional([rules.exists({ table: 'profiles', column: 'id' })]),
+    opener_id: schema.number.optional([
+      rules.exists({
+        table: 'profiles',
+        column: 'id',
+        whereNot: {
+          role: 'guest',
+        },
+      }),
+    ]),
   })
 
   public messages: CustomMessages = {
