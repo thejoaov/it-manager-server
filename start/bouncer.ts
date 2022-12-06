@@ -37,7 +37,7 @@ export const { actions } = Bouncer.define(
   (user: User, profile: Profile) => profile.role !== 'guest'
 )
   .define('deleteTicket', (user: User, profile: Profile) =>
-    (['admin', 'manager', 'support'] as Profile['role'][]).includes(profile.role)
+    (['admin', 'manager', 'support', 'user'] as Profile['role'][]).includes(profile.role)
   )
   .define('updateTicket', (user: User, profile: Profile) =>
     (['admin', 'manager', 'support', 'technician', 'user'] as Profile['role'][]).includes(
@@ -47,7 +47,7 @@ export const { actions } = Bouncer.define(
   .define('closeTicket', (user: User, profile: Profile, ticket: Ticket) => {
     return (
       ((['support', 'technician'] as Profile['role'][]).includes(profile.role) &&
-        ticket.assignee_id === profile.id) ||
+        ticket.assigneeId === profile.id) ||
       (['admin', 'manager'] as Profile['role'][]).includes(profile.role)
     )
   })

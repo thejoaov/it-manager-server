@@ -1,12 +1,35 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database'
+
 import Ticket from 'App/Models/Ticket'
 import TicketUpdateValidator from 'App/Validators/TicketUpdateValidator'
 import TicketValidator from 'App/Validators/TicketValidator'
 
 export default class TicketsController {
+  public async count({ request, response, auth }: HttpContextContract) {
+    await auth.authenticate()
+
+    const [{ total }] = await Database.query()
+      .from('tickets')
+      .whereBetween('status', ['open', 'solving'])
+      .count('*', 'total')
+
+    const [{ open }] = await Database.query()
+      .from('tickets')
+      .where('status', 'open')
+      .count('*', 'open')
+
+    const [{ solving }] = await Database.query()
+      .from('tickets')
+      .where('status', 'solving')
+      .count('*', 'solving')
+
+    response.json({ total, open, solving })
+  }
+
   public async index({ request, response, auth }: HttpContextContract) {
     await auth.authenticate()
-    const { page, perPage, status, priority } = request.qs()
+    const { page, per_page, status, priority } = request.qs()
 
     const tickets = await Ticket.query()
       .where('status', 'like', status ?? '%')
@@ -17,7 +40,7 @@ export default class TicketsController {
       .preload('assignee', (query) => {
         query.preload('user')
       })
-      .paginate(page, perPage)
+      .paginate(page, per_page)
 
     response.json(tickets.serialize())
   }
