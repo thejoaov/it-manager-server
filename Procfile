@@ -1,1 +1,2 @@
-web: node ace db:migrate && node ace db:seed && yarn start
+web: cd build && yarn install --production && yarn start
+release: node ace migration:run --force && node ace db:seed

@@ -6,7 +6,7 @@ import TicketUpdateValidator from 'App/Validators/TicketUpdateValidator'
 import TicketValidator from 'App/Validators/TicketValidator'
 
 export default class TicketsController {
-  public async count({ request, response, auth }: HttpContextContract) {
+  public async count({ response, auth }: HttpContextContract) {
     await auth.authenticate()
 
     const [{ total }] = await Database.query()
