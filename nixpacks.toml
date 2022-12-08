@@ -1,8 +1,0 @@
-[phases.setup]
-nixPkgs = ['...', 'docker-compose', 'nodejs-18_x']
-
-[phases.build]
-cmds = ['yarn', 'cp .env.example .env', 'docker compose up -d', 'yarn run build']
-
-[start]
-cmd = 'yarn start'

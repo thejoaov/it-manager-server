@@ -7,12 +7,26 @@ import ProfileValidator from 'App/Validators/ProfileValidator'
 export default class ProfilesController {
   public async index({ request, response, auth }: HttpContextContract) {
     await auth.authenticate()
-    const { page, perPage = 50, name, email, username } = request.qs()
+    const { page, perPage = 50, name, email, username, filterByRoles } = request.qs()
+
+    const filterBySearchType: Record<string, Profile['role'][]> = {
+      'except-guest': ['user', 'admin', 'manager', 'support', 'technician'],
+      'admin-personel': ['admin', 'manager', 'support', 'technician'],
+      'all': ['user', 'admin', 'manager', 'support', 'technician', 'guest'],
+      'admin': ['admin'],
+      'guest': ['guest'],
+      'manager': ['manager'],
+      'support': ['support'],
+      'technician': ['technician'],
+      'user': ['user'],
+    }
+
+    const filterByRole = filterBySearchType[filterByRoles || 'admin-personel']
 
     if ([name, email, username].every((value) => value === 'all')) {
       const profiles = await Profile.query()
         .preload('user')
-        .whereNotIn('role', ['user', 'guest'])
+        .whereNotIn('role', filterByRole)
         .paginate(page, perPage)
 
       return response.json(profiles.serialize())
@@ -22,16 +36,16 @@ export default class ProfilesController {
       .preload('user')
       .whereHas('user', (query) => {
         query.whereLike('email', `%${email}%`).whereHas('profile', (query) => {
-          query.whereNotIn('role', ['user', 'guest'])
+          query.whereNotIn('role', filterByRole)
         })
       })
       .orWhereHas('user', (query) => {
         query.whereLike('username', `%${username}%`).whereHas('profile', (query) => {
-          query.whereNotIn('role', ['user', 'guest'])
+          query.whereNotIn('role', filterByRole)
         })
       })
       .orWhereLike('name', `%${name}%`)
-      .whereNotIn('role', ['user', 'guest'])
+      .whereNotIn('role', filterByRole)
       .paginate(page, perPage)
 
     return response.json(profiles.serialize())
