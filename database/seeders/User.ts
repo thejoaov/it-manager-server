@@ -4,8 +4,6 @@ import User from 'App/Models/User'
 import { DateTime } from 'luxon'
 
 export default class extends BaseSeeder {
-  public static developmentOnly = true
-
   private async adminSeed() {
     const user = await User.updateOrCreate(
       { username: 'admin', email: 'admin@admin.com' },
