@@ -7,7 +7,7 @@ import ProfileValidator from 'App/Validators/ProfileValidator'
 export default class ProfilesController {
   public async index({ request, response, auth }: HttpContextContract) {
     await auth.authenticate()
-    const { page, perPage = 50, name, email, username, filterByRoles } = request.qs()
+    const { page, perPage = 50, name, email, username, roleFilter } = request.qs()
 
     const filterBySearchType: Record<string, Profile['role'][]> = {
       'except-guest': ['user', 'admin', 'manager', 'support', 'technician'],
@@ -21,13 +21,10 @@ export default class ProfilesController {
       'user': ['user'],
     }
 
-    const filterByRole = filterBySearchType[filterByRoles || 'admin-personel']
+    const filter = filterBySearchType[roleFilter || 'admin-personel']
 
     if ([name, email, username].every((value) => value === 'all')) {
-      const profiles = await Profile.query()
-        .preload('user')
-        .whereNotIn('role', filterByRole)
-        .paginate(page, perPage)
+      const profiles = await Profile.query().preload('user').paginate(page, perPage)
 
       return response.json(profiles.serialize())
     }
@@ -36,16 +33,16 @@ export default class ProfilesController {
       .preload('user')
       .whereHas('user', (query) => {
         query.whereLike('email', `%${email}%`).whereHas('profile', (query) => {
-          query.whereNotIn('role', filterByRole)
+          query.whereIn('role', filter)
         })
       })
       .orWhereHas('user', (query) => {
         query.whereLike('username', `%${username}%`).whereHas('profile', (query) => {
-          query.whereNotIn('role', filterByRole)
+          query.whereIn('role', filter)
         })
       })
       .orWhereLike('name', `%${name}%`)
-      .whereNotIn('role', filterByRole)
+      .whereIn('role', filter)
       .paginate(page, perPage)
 
     return response.json(profiles.serialize())

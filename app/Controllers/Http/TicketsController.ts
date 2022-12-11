@@ -29,7 +29,7 @@ export default class TicketsController {
 
   public async index({ request, response, auth }: HttpContextContract) {
     await auth.authenticate()
-    const { page, per_page, status, priority } = request.qs()
+    const { page, per_page, status, priority, sort } = request.qs()
 
     const tickets = await Ticket.query()
       .where('status', 'like', status ?? '%')
@@ -40,6 +40,7 @@ export default class TicketsController {
       .preload('assignee', (query) => {
         query.preload('user')
       })
+      .orderBy('created_at', sort ?? 'desc')
       .paginate(page, per_page)
 
     response.json(tickets.serialize())
