@@ -44,6 +44,7 @@
   "devDependencies": {
     "@esm2cjs/execa": "^6.1.1-cjs.1",
     "@faker-js/faker": "^7.6.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@japa/preset-adonis": "^1.2.0",
     "@japa/runner": "^2.2.2",
     "@types/rimraf": "^3.0.2",
