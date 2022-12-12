@@ -1,6 +1,5 @@
 {
   "extends": "@istanbuljs/nyc-config-typescript",
-  "all": true,
   "reporter": ["cobertura", "text", "text-summary", "html", "lcov", "json"],
   "reporterOptions": { "mochaFile": "coverage/junit-report.xml" },
   "temp-dir": "tests/coverage/.nyc_output",
