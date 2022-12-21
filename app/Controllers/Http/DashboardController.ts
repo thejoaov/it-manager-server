@@ -6,10 +6,9 @@ export default class DashboardController {
     const user = await auth.authenticate()
     await user.load('profile')
 
-    if (['support', 'technician'].includes(user.profile.role)) {
+    if (['support'].includes(user.profile.role)) {
       const tickets = await Ticket.query()
         .whereBetween('status', ['open', 'solving'])
-        .where('assignee_id', user.profile.id)
         .preload('opener', (query) => {
           query.preload('user')
         })
@@ -21,6 +20,34 @@ export default class DashboardController {
       return response.json({
         solving: tickets.filter((t) => t.status === 'solving'),
         open: tickets.filter((t) => t.status === 'open'),
+      })
+    }
+
+    if (['technician'].includes(user.profile.role)) {
+      const open = await Ticket.query()
+        .where('status', 'open')
+        .preload('opener', (query) => {
+          query.preload('user')
+        })
+        .preload('assignee', (query) => {
+          query.preload('user')
+        })
+        .orderBy('created_at', 'desc')
+
+      const solving = await Ticket.query()
+        .where('status', 'solving')
+        .where('assignee_id', user.profile.id)
+        .preload('opener', (query) => {
+          query.preload('user')
+        })
+        .preload('assignee', (query) => {
+          query.preload('user')
+        })
+        .orderBy('created_at', 'desc')
+
+      return response.json({
+        solving,
+        open,
       })
     }
 
